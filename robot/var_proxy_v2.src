@@ -1,0 +1,59 @@
+&ACCESS RVP
+&REL 2
+&PARAM EDITMASK = *
+&PARAM TEMPLATE = C:\KRC\Roboter\Template\ExpertVorgabe
+DEF var_proxy_v2( )
+ghCommand.motiontype = 0
+
+
+WAIT SEC 1.0 ;
+
+;FOLD INI
+
+  ;FOLD BASISTECH INI
+    GLOBAL INTERRUPT DECL 3 WHEN $STOPMESS==TRUE DO IR_STOPM ( )
+    INTERRUPT ON 3 
+    BAS (#INITMOV,0 )
+  ;ENDFOLD (BASISTECH INI)
+  ;FOLD USER INI
+    ;Make your modifications here
+
+  ;ENDFOLD (USER INI)
+;ENDFOLD (INI)
+
+
+LOOP
+
+
+$ADVANCE =1;
+
+IF (ghCommand.motionType ==1) THEN
+
+ msgnotify("motion type 1")
+ PTP ghCommand.jntPos
+ ghCommand.motionType = 0
+ELSE 
+ IF (ghCommand.motionType ==2 ) THEN 
+     msgnotify("motion type 2")
+     PTP $AXIS_ACT
+    ghCommand.targetPos.S = $POS_ACT.S
+    ghCommand.targetPOS.T = $POS_ACT.T
+;FOLD LIN p7 Vel=2 m/s CPDAT2 Tool[1]:DFM24_SPIKE Base[1]:DFM24_BASE;%{PE}%R 8.3.38,%MKUKATPBASIS,%CMOVE,%VLIN,%P 1:LIN, 2:p7, 3:, 5:2, 7:CPDAT2
+$BWDSTART=FALSE
+LDAT_ACT=LCPDAT2
+FDAT_ACT=Fp7
+BAS(#CP_PARAMS,2)
+LIN ghCommand.targetPos
+
+;ENDFOLD
+     ghCommand.motionType =0;
+ ELSE
+    msgnotify("waiting next cmd");
+    WAIT SEC 1.0;
+
+ ENDIF
+ENDIF 
+
+ENDLOOP
+
+END
