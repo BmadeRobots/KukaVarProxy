@@ -1,10 +1,10 @@
 &ACCESS RVP
-&REL 2
+&REL 121
 &PARAM EDITMASK = *
 &PARAM TEMPLATE = C:\KRC\Roboter\Template\ExpertVorgabe
 DEF var_proxy_v2( )
 ghCommand.motiontype = 0
-
+ghCommand.speed = 10
 
 WAIT SEC 1.0 ;
 
@@ -27,33 +27,39 @@ LOOP
 
 $ADVANCE =1;
 
-IF (ghCommand.motionType ==1) THEN
+SWITCH ghCommand.motionType
+    CASE 1
+        msgnotify("motion type 1 - jnt ")
+       ;DO NOT USE "CHANGE" on tp for the next line; See the detail under open fold
+;FOLD PTP jntPos Vel=100 % PDAT3 Tool[1]:DFM24_SPIKE Base[1]:DFM24_BASE;%{PE}%R 8.3.38,%MKUKATPBASIS,%CMOVE,%VPTP,%P 1:PTP, 2:jntPos, 3:, 5:100, 7:PDAT3
+$BWDSTART=FALSE
+PDAT_ACT=PPDAT3
+FDAT_ACT=FjntPos
+BAS(#PTP_PARAMS,ghCommand.speed)
+PTP ghCommand.jntPos 
+;ENDFOLD
+      ghCommand.motionType = 0
 
- msgnotify("motion type 1")
- PTP ghCommand.jntPos
- ghCommand.motionType = 0
-ELSE 
- IF (ghCommand.motionType ==2 ) THEN 
-     msgnotify("motion type 2")
-     PTP $AXIS_ACT
-    ghCommand.targetPos.S = $POS_ACT.S
-    ghCommand.targetPOS.T = $POS_ACT.T
+    CASE 2
+        msgnotify("motion type 2 - linear ")
+        PTP $AXIS_ACT
+        ; DO NOT USE "CHANGE" on tp for the next line; See the detail under open fold
 ;FOLD LIN p7 Vel=2 m/s CPDAT2 Tool[1]:DFM24_SPIKE Base[1]:DFM24_BASE;%{PE}%R 8.3.38,%MKUKATPBASIS,%CMOVE,%VLIN,%P 1:LIN, 2:p7, 3:, 5:2, 7:CPDAT2
 $BWDSTART=FALSE
 LDAT_ACT=LCPDAT2
 FDAT_ACT=Fp7
-BAS(#CP_PARAMS,2)
+BAS(#CP_PARAMS,ghCommand.speed)
 LIN ghCommand.targetPos
 
 ;ENDFOLD
-     ghCommand.motionType =0;
- ELSE
-    msgnotify("waiting next cmd");
-    WAIT SEC 1.0;
-
- ENDIF
-ENDIF 
-
+    CASE 3
+         msgnotify("cmd type 3 - setting do")
+         $OUT[ghCommand.do_address] = ghCommand.do_value 
+         ghCommand.motionType=0
+    DEFAULT    
+        msgnotify("waiting next cmd");
+        WAIT SEC 1.0;
+ENDSWITCH
 ENDLOOP
 
 END
