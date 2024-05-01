@@ -1,12 +1,12 @@
 &ACCESS RVP
-&REL 121
+&REL 159
 &PARAM EDITMASK = *
 &PARAM TEMPLATE = C:\KRC\Roboter\Template\ExpertVorgabe
 DEFDAT  var_proxy_v2 PUBLIC
 GLOBAL STRUC MotionCommand INT motionType,E6AXIS jntPos,E6POS targetPos,REAL speed, INT do_address, BOOL do_value
 
 DECL MotionCommand ghCommand
-
+DECL E6POS ghMotionBuf
 
 
 

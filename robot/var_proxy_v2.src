@@ -1,5 +1,5 @@
 &ACCESS RVP
-&REL 121
+&REL 159
 &PARAM EDITMASK = *
 &PARAM TEMPLATE = C:\KRC\Roboter\Template\ExpertVorgabe
 DEF var_proxy_v2( )
@@ -43,15 +43,22 @@ PTP ghCommand.jntPos
     CASE 2
         msgnotify("motion type 2 - linear ")
         PTP $AXIS_ACT
+        ghMotionBuf = ghCommand.targetPos
+        IF (VARSTATE("ghCommand.targetPos.S")<>#INITIALIZED) THEN
+           ghMotionBuf.S = $POS_ACT.S            
+           ghMotionBuf.T = $POS_ACT.T
+
+        ENDIF 
         ; DO NOT USE "CHANGE" on tp for the next line; See the detail under open fold
 ;FOLD LIN p7 Vel=2 m/s CPDAT2 Tool[1]:DFM24_SPIKE Base[1]:DFM24_BASE;%{PE}%R 8.3.38,%MKUKATPBASIS,%CMOVE,%VLIN,%P 1:LIN, 2:p7, 3:, 5:2, 7:CPDAT2
 $BWDSTART=FALSE
 LDAT_ACT=LCPDAT2
 FDAT_ACT=Fp7
 BAS(#CP_PARAMS,ghCommand.speed)
-LIN ghCommand.targetPos
+LIN ghMotionBuf
 
 ;ENDFOLD
+       ghCommand.motionType = 0
     CASE 3
          msgnotify("cmd type 3 - setting do")
          $OUT[ghCommand.do_address] = ghCommand.do_value 
