@@ -30,3 +30,12 @@ struct MotionCommand {
 
 ```
 
+### References
+**KUKA ROS** <br>
+https://wiki.ros.org/kuka
+
+**KUKA ROS -  Experimental Packages** <br>
+https://wiki.ros.org/kuka_experimental
+
+**RSI interface** <br>
+https://github.com/gavanderhoorn/kuka_experimental/tree/kr6r900sixx_moveit_rsi_convenience/kuka_rsi_hw_interface
